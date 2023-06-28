@@ -36,20 +36,24 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, result, Toast.LENGTH_SHORT).show();
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                userViewModel.loginUser(username, password);
+        // Observe isLoggedIn LiveData
+        userViewModel.getIsLoggedIn().observe(this, isLoggedIn -> {
+            if (isLoggedIn) {
+                Intent intent = new Intent(LoginActivity.this, WorkoutActivity.class);
+                startActivity(intent);
             }
         });
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                userViewModel.registerUser(username, password);
-            }
+        loginButton.setOnClickListener(v -> {
+            String username = usernameEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            userViewModel.loginUser(username, password);
+        });
+
+        registerButton.setOnClickListener(v -> {
+            String username = usernameEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            userViewModel.registerUser(username, password);
         });
     }
 }

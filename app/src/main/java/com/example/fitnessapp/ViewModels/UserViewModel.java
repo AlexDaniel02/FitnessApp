@@ -23,6 +23,12 @@
             userRepository = new UserRepository(application);
         }
 
+        private MutableLiveData<Boolean> isLoggedIn = new MutableLiveData<>();
+
+        public LiveData<Boolean> getIsLoggedIn() {
+            return isLoggedIn;
+        }
+
         public LiveData<String> getOperationResult() {
             return operationResult;
         }
@@ -32,8 +38,10 @@
                 User user = userRepository.getUserByUsernameAndPassword(username, password);
                 if (user != null) {
                     operationResult.postValue("Login successful!");
+                    isLoggedIn.postValue(true);
                 } else {
                     operationResult.postValue("Login failed. Account doesn't exist.");
+                    isLoggedIn.postValue(false);
                 }
             });
         }

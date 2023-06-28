@@ -17,6 +17,9 @@ public interface WorkoutDao {
     @Insert
     void insertWorkout(Workout workout);
 
+    @Query("SELECT MAX(id) FROM Workout")
+    LiveData<Integer> getLastWorkoutId();
+
     @Delete
     void deleteWorkout(Workout workout);
 }
