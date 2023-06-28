@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     android:padding="16dp">
 
     <EditText
@@ -15,7 +16,9 @@
         android:id="@+id/add_exercise_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Exercise" />
+        android:text="Add Exercise"
+        android:background="@drawable/shape3"
+        android:textColor="@drawable/button_text_color_selector"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exercise_recycler_view"
@@ -28,4 +31,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Workout" />
+
 </LinearLayout>

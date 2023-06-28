@@ -7,6 +7,7 @@ import androidx.room.Query;
 
 import com.example.fitnessapp.Models.EntityLayer.Exercise;
 import com.example.fitnessapp.Models.EntityLayer.User;
+import com.example.fitnessapp.Models.EntityLayer.Workout;
 
 import java.util.List;
 
@@ -17,5 +18,8 @@ public interface ExerciseDao {
 
     @Query("SELECT * FROM Exercise WHERE id = :exerciseId")
     Exercise findExerciseById(int exerciseId);
+
+    @Delete
+    void deleteExercise(Exercise exercise);
 }
 

@@ -19,4 +19,32 @@ public class Exercise {
 
     @ColumnInfo(name = "sets")
     public int sets;
+    public void setName(String name)
+    {
+        this.name=name;
+    }
+    public void setReps(int reps)
+    {
+        this.reps=reps;
+    }
+    public void setSets(int sets)
+    {
+        this.sets=sets;
+    }
+    public void setId(int id)
+    {
+        this.id=id;
+    }
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getSets() {
+        return sets;
+    }
+
+    public int getReps() {
+        return reps;
+    }
 }

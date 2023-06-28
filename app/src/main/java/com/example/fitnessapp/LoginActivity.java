@@ -2,6 +2,7 @@ package com.example.fitnessapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,17 +14,19 @@ import androidx.room.Room;
 
 import com.example.fitnessapp.Models.AppDatabase;
 import com.example.fitnessapp.Models.DataAccessLayer.UserDao;
+import com.example.fitnessapp.Models.DataAccessLayer.WorkoutDao;
 import com.example.fitnessapp.Models.EntityLayer.User;
+import com.example.fitnessapp.Models.EntityLayer.Workout;
 import com.example.fitnessapp.ViewModels.UserViewModel;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private UserViewModel userViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
         EditText usernameEditText = findViewById(R.id.username);

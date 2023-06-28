@@ -1,5 +1,6 @@
 package com.example.fitnessapp.Models.DataAccessLayer;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -15,9 +16,10 @@ public interface WorkoutDao {
     LiveData<List<Workout>> getAllWorkouts();
 
     @Insert
-    void insertWorkout(Workout workout);
+    long insertWorkout(Workout workout);
 
-    @Query("SELECT MAX(id) FROM Workout")
+    @Query("SELECT MAX(id) FROM workout")
+    @Nullable
     LiveData<Integer> getLastWorkoutId();
 
     @Delete

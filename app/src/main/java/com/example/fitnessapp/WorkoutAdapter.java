@@ -3,6 +3,7 @@ package com.example.fitnessapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,7 +17,14 @@ import java.util.List;
 public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder> {
     private List<Workout> workouts = new ArrayList<>();
     private OnItemClickListener listener;
+public WorkoutAdapter(List<Workout> workouts)
+{
+    this.workouts=workouts;
+}
+public WorkoutAdapter()
+{
 
+}
     @NonNull
     @Override
     public WorkoutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -54,9 +62,28 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
                     listener.onItemClick(workouts.get(position));
                 }
             });
+            ImageButton btnDelete = itemView.findViewById(R.id.btn_delete);
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION ) {
+                        Workout workout = workouts.get(position);
+                        onDeleteClickListener.onDeleteClick(workout);
+                    }
+                }
+            });
         }
     }
+    private OnDeleteClickListener onDeleteClickListener;
 
+    public interface OnDeleteClickListener {
+        void onDeleteClick(Workout workout);
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.onDeleteClickListener = listener;
+    }
     public interface OnItemClickListener {
         void onItemClick(Workout workout);
     }

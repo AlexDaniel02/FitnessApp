@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.fitnessapp.Models.EntityLayer.Workout;
 
-public class WorkoutFragment extends Fragment {
+/*public class WorkoutFragment extends Fragment {
     private static final String ARG_WORKOUT = "arg_workout";
 
     private TextView workoutNameTextView;
@@ -44,4 +44,4 @@ public class WorkoutFragment extends Fragment {
 
         return view;
     }
-}
+}*/

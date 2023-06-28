@@ -21,7 +21,10 @@ public class Workout implements Parcelable {
     public Workout(){
 
     }
-
+public void setId(int id)
+{
+    this.id=id;
+}
     public String setWorkoutName(String workoutName) {
         return name=workoutName;
     }
