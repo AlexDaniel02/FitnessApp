@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fitnessapp.Models.AppDatabase;
 import com.example.fitnessapp.Models.DataAccessLayer.ExerciseDao;
+import com.example.fitnessapp.Models.DataAccessLayer.WorkoutDao;
 import com.example.fitnessapp.Models.EntityLayer.Exercise;
 import com.example.fitnessapp.Models.EntityLayer.Workout;
 import com.example.fitnessapp.ViewModels.MyViewModelFactory;
@@ -32,6 +33,7 @@ public class EditWorkoutFragment extends Fragment implements ExerciseAdapter.OnE
     private List<Exercise> exercises = new ArrayList<>();
     private ExerciseAdapter exerciseAdapter;
     private ExerciseDao exerciseDao;
+    private WorkoutDao workoutDao;
 
     public EditWorkoutFragment() {
     }
@@ -42,6 +44,7 @@ public class EditWorkoutFragment extends Fragment implements ExerciseAdapter.OnE
         if (getArguments() != null) {
             workout = getArguments().getParcelable("workout");
             exerciseDao = AppDatabase.getDatabase(requireContext()).exerciseDao();
+            workoutDao= AppDatabase.getDatabase(requireContext()).workoutDao();
 
         }
     }
@@ -79,68 +82,58 @@ public class EditWorkoutFragment extends Fragment implements ExerciseAdapter.OnE
         });
 
         Button addExerciseButton = view.findViewById(R.id.addExerciseButton);
-
         addExerciseButton.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_exercise, null);
-            EditText exerciseNameEditText = dialogView.findViewById(R.id.exercise_name_edittext);
-            EditText exerciseSetsEditText = dialogView.findViewById(R.id.exercise_sets_edittext);
-            EditText exerciseRepsEditText = dialogView.findViewById(R.id.exercise_reps_edittext);
-            Button dialogAddExerciseButton = dialogView.findViewById(R.id.dialog_add_exercise_button);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_exercise, null);
+                    EditText exerciseNameEditText = dialogView.findViewById(R.id.exercise_name_edittext);
+                    EditText exerciseSetsEditText = dialogView.findViewById(R.id.exercise_sets_edittext);
+                    EditText exerciseRepsEditText = dialogView.findViewById(R.id.exercise_reps_edittext);
+                    Button dialogAddExerciseButton = dialogView.findViewById(R.id.dialog_add_exercise_button);
+                    builder.setView(dialogView);
+                    AlertDialog dialog = builder.create();
+                    dialogAddExerciseButton.setOnClickListener(v2 -> {
+                        String newExerciseName = exerciseNameEditText.getText().toString();
+                        String newExerciseSetsText = exerciseSetsEditText.getText().toString();
+                        String newExerciseRepsText = exerciseRepsEditText.getText().toString();
 
-            builder.setView(dialogView);
-            AlertDialog dialog = builder.create();
+                        if (newExerciseName.isEmpty() || newExerciseSetsText.isEmpty() || newExerciseRepsText.isEmpty()) {
+                            Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Exercise newExercise = new Exercise();
+                        newExercise.setName(newExerciseName);
+                        newExercise.setSets(Integer.parseInt(newExerciseSetsText));
+                        newExercise.setReps(Integer.parseInt(newExerciseRepsText));
 
-            dialogAddExerciseButton.setOnClickListener(v2 -> {
-                String newExerciseName = exerciseNameEditText.getText().toString();
-                String newExerciseSetsText = exerciseSetsEditText.getText().toString();
-                String newExerciseRepsText = exerciseRepsEditText.getText().toString();
+                        AppDatabase.databaseWriteExecutor.execute(() -> {
+                            int id = (int) exerciseDao.insertExercise(newExercise);
+                            newExercise.setId(id);
+                        });
 
-                if (newExerciseName.isEmpty() || newExerciseSetsText.isEmpty() || newExerciseRepsText.isEmpty()) {
-                    Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                        exercises.add(newExercise);
+                        exerciseAdapter.notifyDataSetChanged();
+
+                        Toast.makeText(requireContext(), "Exercise added", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    });
+                    dialog.show();
+                });
+            saveButton.setOnClickListener(v3 -> {
+                if (exercises.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please add an exercise!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Exercise newExercise = new Exercise();
-                newExercise.setName(newExerciseName);
-                newExercise.setSets(Integer.parseInt(newExerciseSetsText));
-                newExercise.setReps(Integer.parseInt(newExerciseRepsText));
-
-                AppDatabase.databaseWriteExecutor.execute(() -> {
-                    int id = (int)exerciseDao.insertExercise(newExercise);
-                    newExercise.setId(id);
-                });
-
-                exercises.add(newExercise);
-                exerciseAdapter.notifyDataSetChanged();
-
-                Toast.makeText(requireContext(), "Exercise added", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+                String newWorkoutName = workoutNameEditText.getText().toString();
+                if (newWorkoutName.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please enter a workout name", Toast.LENGTH_SHORT).show();
+                } else {
+                    workout.setWorkoutName(newWorkoutName);
+                    workoutViewModel.updateWorkoutWithExercises(workout, exercises);
+                    Toast.makeText(requireContext(), "Workout updated successfully", Toast.LENGTH_SHORT).show();
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                }
             });
-
-        saveButton.setOnClickListener(v3 -> {
-            if(exercises.isEmpty()){
-                Toast.makeText(requireContext(), "Please add an exercise!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            String newWorkoutName = workoutNameEditText.getText().toString();
-            if (newWorkoutName.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a workout name", Toast.LENGTH_SHORT).show();
-            } else {
-                workout.setWorkoutName(newWorkoutName);
-                workoutViewModel.updateWorkoutWithExercises(workout, exercises);
-                Toast.makeText(requireContext(), "Workout updated successfully", Toast.LENGTH_SHORT).show();
-                requireActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
-
-
-
-            dialog.show();
-        });
-
     }
-
     @Override
     public void onDeleteClick(Exercise exercise) {
         AppDatabase.databaseWriteExecutor.execute(() -> {

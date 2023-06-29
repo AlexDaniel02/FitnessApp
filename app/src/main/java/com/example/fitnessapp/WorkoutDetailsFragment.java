@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,10 @@ public class WorkoutDetailsFragment extends Fragment{
         RecyclerView exerciseRecyclerView = view.findViewById(R.id.exercise_recycler_view);
 
         Workout workout = requireArguments().getParcelable("workout");
-
+        Button goBackButton = view.findViewById(R.id.goBackButton);
+        goBackButton.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
         if (workout != null) {
             workoutNameTextView.setText(workout.getName());
         }

@@ -53,6 +53,7 @@ public class WorkoutViewModel extends ViewModel {
     }
     public void updateWorkoutWithExercises(Workout workout, List<Exercise> exercises) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
+            workoutDao.updateWorkout(workout);
             List<WorkoutExerciseCrossRef> oldCrossRefs = crossRefDao.findExercisesForWorkout(workout.id);
             for (WorkoutExerciseCrossRef oldCrossRef : oldCrossRefs) {
                 crossRefDao.deleteWorkoutExerciseCrossRef(oldCrossRef);
