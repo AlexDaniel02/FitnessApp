@@ -1,7 +1,10 @@
 package com.example.fitnessapp;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +39,10 @@ public class CreateWorkoutFragment extends Fragment implements ExerciseAdapter.O
     private WorkoutDao workoutDao;
     private WorkoutViewModel workoutViewModel;
     public CreateWorkoutFragment() {
-        // Required empty public constructor
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get the ExerciseDao from the AppDatabase
         exerciseDao = AppDatabase.getDatabase(requireContext()).exerciseDao();
         workoutDao= AppDatabase.getDatabase(requireContext()).workoutDao();
         MyViewModelFactory factory = new MyViewModelFactory(requireActivity().getApplication());
@@ -53,18 +54,14 @@ public class CreateWorkoutFragment extends Fragment implements ExerciseAdapter.O
         workoutNameEditText = view.findViewById(R.id.workout_name_edittext);
         RecyclerView exerciseRecyclerView = view.findViewById(R.id.exercise_recycler_view);
 
-        // Set up RecyclerView for exercises
         exerciseAdapter = new ExerciseAdapter(exercises);
         exerciseRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         exerciseRecyclerView.setAdapter(exerciseAdapter);
         exerciseAdapter.setOnDeleteClickListener(this);
-        // Add Exercise button
         Button addExerciseButton = view.findViewById(R.id.add_exercise_button);
         addExerciseButton.setOnClickListener(v -> {
-            // Create a new Exercise object and add it to the list
             Exercise newExercise = new Exercise();
 
-            // Create the AlertDialog
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_exercise, null);
             EditText exerciseNameEditText = dialogView.findViewById(R.id.exercise_name_edittext);
@@ -76,10 +73,8 @@ public class CreateWorkoutFragment extends Fragment implements ExerciseAdapter.O
             AlertDialog dialog = builder.create();
 
             dialogAddExerciseButton.setOnClickListener(b -> {
-                // Set the exercise name based on user input
                 String exerciseName = exerciseNameEditText.getText().toString();
 
-                // Set the exercise sets and reps based on user input
                 String setsText = exerciseSetsEditText.getText().toString();
                 String repsText = exerciseRepsEditText.getText().toString();
                 if (repsText.isEmpty() || setsText.isEmpty() || exerciseName.isEmpty()) {
@@ -103,27 +98,35 @@ public class CreateWorkoutFragment extends Fragment implements ExerciseAdapter.O
             dialog.show();
         });
 
-        // Add Workout button
         Button addWorkoutButton = view.findViewById(R.id.add_workout_button);
         addWorkoutButton.setOnClickListener(v -> {
             String workoutName = workoutNameEditText.getText().toString();
 
-            // Create a new Workout object with the name
             Workout newWorkout = new Workout();
             if(workoutName.isEmpty())
             {
-                Toast.makeText(requireContext(), "Please enter an workout name.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please enter a workout name.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            newWorkout.setWorkoutName(workoutName);
 
-            // Insert the workout into the database
+            SharedPreferences sharedPref = requireActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+            int userId = sharedPref.getInt("currentUserId", -1);
+
+            System.out.println(userId);
+
+            newWorkout.setWorkoutName(workoutName);
+            newWorkout.setUserId(userId);
+
+            if(exercises.isEmpty()){
+                Toast.makeText(requireContext(), "Please add some exercises.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             AppDatabase.databaseWriteExecutor.execute(() -> {
                 newWorkout.id= (int) workoutDao.insertWorkout(newWorkout);
                 workoutViewModel.addWorkoutWithExercises(newWorkout, exercises);
             });
 
-            // Navigate back to ListWorkoutFragment
             requireActivity().getSupportFragmentManager().popBackStack();
         });
 

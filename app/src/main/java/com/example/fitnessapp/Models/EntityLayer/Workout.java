@@ -4,15 +4,22 @@ import android.os.Parcelable;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(foreignKeys = @ForeignKey(entity = User.class,
+        parentColumns = "id",
+        childColumns = "userId",
+        onDelete = ForeignKey.CASCADE))
 public class Workout implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
     @ColumnInfo(name = "name")
     public String name;
+
+    @ColumnInfo(name = "userId")
+    public int userId;
 
     public String getName() {
         return name;
@@ -29,7 +36,6 @@ public void setId(int id)
         return name=workoutName;
     }
 
-    // Parcelable implementation
     public Workout(Parcel in) {
         id = in.readInt();
         name = in.readString();
@@ -56,5 +62,13 @@ public void setId(int id)
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
         parcel.writeString(name);
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setUserId(int userId) {
+        this.userId=userId;
     }
 }

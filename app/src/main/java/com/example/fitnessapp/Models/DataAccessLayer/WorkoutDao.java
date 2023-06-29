@@ -6,6 +6,8 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
+
 import com.example.fitnessapp.Models.EntityLayer.Workout;
 
 import java.util.List;
@@ -18,10 +20,12 @@ public interface WorkoutDao {
     @Insert
     long insertWorkout(Workout workout);
 
-    @Query("SELECT MAX(id) FROM workout")
-    @Nullable
-    LiveData<Integer> getLastWorkoutId();
-
     @Delete
     void deleteWorkout(Workout workout);
+
+    @Update
+    void updateWorkout(Workout workout);
+
+    @Query("SELECT * FROM workout WHERE userId = :userId")
+    LiveData<List<Workout>> getWorkoutsByUser(int userId);
 }

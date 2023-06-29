@@ -1,10 +1,14 @@
 package com.example.fitnessapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +26,7 @@ import com.example.fitnessapp.ViewModels.WorkoutViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListWorkoutFragment extends Fragment implements WorkoutAdapter.OnDeleteClickListener{
+public class ListWorkoutFragment extends Fragment implements WorkoutAdapter.OnDeleteClickListener, WorkoutAdapter.OnEditClickListener{
     private List<Workout> workouts = new ArrayList<>();
     private WorkoutAdapter workoutAdapter;
 
@@ -42,9 +46,14 @@ public class ListWorkoutFragment extends Fragment implements WorkoutAdapter.OnDe
         workoutRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         workoutRecyclerView.setAdapter(workoutAdapter);
         workoutAdapter.setOnDeleteClickListener(this);
+        workoutAdapter.setOnEditClickListener(this);
+
+        SharedPreferences sharedPref = requireActivity().getSharedPreferences("Login", Context.MODE_PRIVATE);
+        int userId = sharedPref.getInt("currentUserId", -1);
+
         MyViewModelFactory factory = new MyViewModelFactory(requireActivity().getApplication());
         WorkoutViewModel workoutViewModel = new ViewModelProvider(this, factory).get(WorkoutViewModel.class);
-        workoutViewModel.getWorkouts().observe(getViewLifecycleOwner(), updatedWorkouts -> {
+        workoutViewModel.getWorkoutsByUser(userId).observe(getViewLifecycleOwner(), updatedWorkouts -> {
             workouts.clear();
             workouts.addAll(updatedWorkouts);
             workoutAdapter.notifyDataSetChanged();
@@ -56,12 +65,43 @@ public class ListWorkoutFragment extends Fragment implements WorkoutAdapter.OnDe
                     .addToBackStack(null)
                     .commit();
         });
+
+
+
+        workoutAdapter.setOnItemClickListener(new WorkoutAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Workout workout) {
+                WorkoutDetailsFragment fragment = new WorkoutDetailsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("workout", workout);
+                fragment.setArguments(bundle);
+
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
+
     @Override
     public void onDeleteClick(Workout workout) {
         MyViewModelFactory factory = new MyViewModelFactory(requireActivity().getApplication());
         WorkoutViewModel workoutViewModel = new ViewModelProvider(this, factory).get(WorkoutViewModel.class);
         workoutViewModel.deleteWorkout(workout);
+    }
+
+    @Override
+    public void onEditClick(Workout workout) {
+        EditWorkoutFragment fragment = new EditWorkoutFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("workout", workout);
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
 }

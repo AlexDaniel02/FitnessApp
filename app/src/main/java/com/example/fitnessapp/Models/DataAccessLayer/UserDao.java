@@ -8,8 +8,6 @@ import com.example.fitnessapp.Models.EntityLayer.User;
 
 @Dao
 public interface UserDao {
-    @Query("SELECT * FROM User WHERE username=:username AND password=:password LIMIT 1")
-    User findUser(String username, String password);
     @Query("SELECT * FROM User WHERE username = :username")
     User getUserByUsername(String username);
     @Query("SELECT * FROM User WHERE username = :username AND password = :password")

@@ -18,7 +18,7 @@ import com.example.fitnessapp.Models.EntityLayer.WorkoutExerciseCrossRef;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Exercise.class, Workout.class, WorkoutExerciseCrossRef.class}, version = 1)
+@Database(entities = {User.class, Exercise.class, Workout.class, WorkoutExerciseCrossRef.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract ExerciseDao exerciseDao();
@@ -36,7 +36,8 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                                    AppDatabase.class, "fitness_database")
+                                    AppDatabase.class, "app_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

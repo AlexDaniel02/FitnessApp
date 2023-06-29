@@ -21,10 +21,6 @@ public WorkoutAdapter(List<Workout> workouts)
 {
     this.workouts=workouts;
 }
-public WorkoutAdapter()
-{
-
-}
     @NonNull
     @Override
     public WorkoutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,11 +40,6 @@ public WorkoutAdapter()
         return workouts.size();
     }
 
-    public void setWorkouts(List<Workout> workouts) {
-        this.workouts = workouts;
-        notifyDataSetChanged();
-    }
-
     class WorkoutViewHolder extends RecyclerView.ViewHolder {
         private TextView workoutNameTextView;
 
@@ -63,6 +54,7 @@ public WorkoutAdapter()
                 }
             });
             ImageButton btnDelete = itemView.findViewById(R.id.btn_delete);
+            ImageButton btnEdit = itemView.findViewById(R.id.btn_edit);
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -71,6 +63,13 @@ public WorkoutAdapter()
                         Workout workout = workouts.get(position);
                         onDeleteClickListener.onDeleteClick(workout);
                     }
+                }
+            });
+            btnEdit.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && onEditClickListener != null) {
+                    Workout workout = workouts.get(position);
+                    onEditClickListener.onEditClick(workout);
                 }
             });
         }
@@ -87,13 +86,19 @@ public WorkoutAdapter()
     public interface OnItemClickListener {
         void onItemClick(Workout workout);
     }
-
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public void setup(List<Workout> workouts) {
-        this.workouts = workouts;
-        notifyDataSetChanged();
+    public interface OnEditClickListener {
+        void onEditClick(Workout workout);
     }
+
+    private OnEditClickListener onEditClickListener;
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.onEditClickListener = listener;
+    }
+
+
 }
