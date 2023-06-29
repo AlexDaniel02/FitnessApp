@@ -11,9 +11,6 @@ public class Exercise {
     @ColumnInfo(name = "name")
     public String name;
 
-    @ColumnInfo(name = "description")
-    public String description;
-
     @ColumnInfo(name = "reps")
     public int reps;
 
